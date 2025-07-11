@@ -16,21 +16,21 @@ export class Game {
         this.canvas.height = 500;
 
         this.groundHeight = 60;
-        this.gameSpeed = 4; // Velocidad base inicial, ajustada por nivel
+        this.gameSpeed = 4; 
         this.score = 0;
         this.isGameOver = false;
         this.isPaused = false;
         this.lastTime = 0;
-        this.currentLevelNumber = 1; // Nivel actual, inicia en 1
-        this.keys = {}; // Para el control de teclado
+        this.currentLevelNumber = 1; 
+        this.keys = {}; 
 
         this.player = null;
         this.obstacles = [];
         this.enemies = [];
-        this.projectiles = []; // Incluye proyectiles del jugador y enemigos
+        this.projectiles = [];
         this.boss = null;
-        this.level = null; // Instancia del nivel actual
-        this.animationFrameId = null; // Para controlar el bucle requestAnimationFrame
+        this.level = null; 
+        this.animationFrameId = null; 
 
         this.assets = {
             backgrounds: {},
@@ -45,16 +45,16 @@ export class Game {
 
         this.unlockedLevels = JSON.parse(localStorage.getItem('unlockedLevels') || '[1]');
 
-        this.soundEnabled = localStorage.getItem('soundEnabled') === 'false' ? false : true; // Cargar preferencia de sonido
-        setSoundEnabled(this.soundEnabled); // Configurar la utilidad de sonido
+        this.soundEnabled = localStorage.getItem('soundEnabled') === 'false' ? false : true; 
+        setSoundEnabled(this.soundEnabled); 
 
-        this.voiceSystem = null; // Se inicializa después de cargar los assets
+        this.voiceSystem = null;
 
         this.initEventListeners();
         this.loadAssets().then(() => {
-            // Todos los assets cargados, ahora podemos pasar al menú principal
+            
             this.showScreen('main-menu');
-            this.voiceSystem = new VoiceRecognitionSystem(this); // Inicializar sistema de voz
+            this.voiceSystem = new VoiceRecognitionSystem(this); 
         }).catch(error => {
             console.error("Fallo al cargar assets:", error);
             alert("Error al cargar los recursos del juego. Intenta recargar la página.");
@@ -62,9 +62,9 @@ export class Game {
     }
 
     initEventListeners() {
-        // Controles de teclado
+        
         window.addEventListener('keydown', (e) => {
-            // Solo procesar si el juego no está pausado, no ha terminado y el jugador existe y no está muerto
+            
             if (!this.isPaused && !this.isGameOver && this.player && !this.player.isDead) {
                 this.keys[e.code] = true;
                 // Manejar acciones instantáneas al presionar
@@ -79,18 +79,18 @@ export class Game {
         });
 
         window.addEventListener('keyup', (e) => {
-            // Solo procesar si el juego no está pausado, no ha terminado y el jugador existe y no está muerto
+            
             if (!this.isPaused && !this.isGameOver && this.player && !this.player.isDead) {
                 this.keys[e.code] = false;
-                // Si suelta la tecla de agacharse, el personaje se levanta
+                
                 if (e.code === 'ArrowDown') {
                     this.player.duck(false);
                 }
             }
         });
 
-        // Eventos de botones de UI
-        document.getElementById('play-game-btn').addEventListener('click', () => this.startNewGame(this.unlockedLevels[0])); // Inicia en el primer nivel desbloqueado
+        
+        document.getElementById('play-game-btn').addEventListener('click', () => this.startNewGame(this.unlockedLevels[0])); 
         document.getElementById('levels-btn').addEventListener('click', () => this.showScreen('level-selection-menu'));
         document.getElementById('instructions-btn').addEventListener('click', () => this.showScreen('instructions-screen'));
         document.getElementById('credits-btn').addEventListener('click', () => this.showScreen('credits-screen'));
@@ -99,8 +99,8 @@ export class Game {
         document.getElementById('back-to-main-menu-from-instructions').addEventListener('click', () => this.showScreen('main-menu'));
         document.getElementById('back-to-main-menu-from-credits').addEventListener('click', () => this.showScreen('main-menu'));
 
-        // Los botones de Game Over y Level Complete ahora usan showScreen() para consistencia
-        document.getElementById('restart-btn').addEventListener('click', () => this.reset(true)); // Reinicia el nivel actual
+
+        document.getElementById('restart-btn').addEventListener('click', () => this.reset(true));
         document.getElementById('next-level-btn').addEventListener('click', () => this.nextLevel());
         document.getElementById('back-to-menu-from-gameover').addEventListener('click', () => this.showScreen('main-menu'));
         document.getElementById('back-to-menu-from-level-complete').addEventListener('click', () => this.showScreen('main-menu'));
@@ -115,7 +115,7 @@ export class Game {
             });
         });
 
-        // Toggle de sonido
+       
         const soundCheckbox = document.getElementById('sound-checkbox');
         soundCheckbox.checked = this.soundEnabled;
         soundCheckbox.addEventListener('change', (e) => {
@@ -142,7 +142,7 @@ export class Game {
             loadImage('assets/images/enemies/bird-2.PNG').then(img => this.assets.enemySprites.bird = img),
             loadImage('assets/images/obstacles/stone.PNG').then(img => this.assets.obstacleSprite = img),
             loadImage('assets/images/boss/boss.PNG').then(img => this.assets.bossSprite = img),
-            loadImage('assets/images/ui/heart.PNG').then(img => this.assets.ui.heart = img),
+            loadImage('assets/images/vida/heart.PNG').then(img => this.assets.ui.heart = img),
             loadImage('assets/images/proyectil/proyectil_personaje.PNG').then(img => this.assets.playerProjectile = img),
             loadImage('assets/images/proyectil/proyectil_enemigo.PNG').then(img => this.assets.enemyProjectile = img)
         ];
@@ -152,37 +152,36 @@ export class Game {
     }
 
     showScreen(screenId) {
-        // Oculta todas las pantallas .game-screen y .modal
         document.querySelectorAll('.game-screen').forEach(screen => {
             screen.classList.remove('active');
-            screen.style.display = 'none'; // Asegura que estén ocultas
+            screen.style.display = 'none'; 
         });
 
         const screenToShow = document.getElementById(screenId);
         if (screenToShow) {
-            screenToShow.style.display = 'flex'; // Muestra el elemento (puede ser 'block' o 'flex' según tu CSS)
-            // Forzar reflow para asegurar que la transición de opacidad se aplique
+            screenToShow.style.display = 'flex'; 
+           
             void screenToShow.offsetWidth;
-            screenToShow.classList.add('active'); // Activa la transición de opacidad y pointer-events
+            screenToShow.classList.add('active'); 
         } else {
             console.warn(`Pantalla con ID '${screenId}' no encontrada.`);
         }
 
-        // Actualizar estado de botones de nivel
+    
         if (screenId === 'level-selection-menu') {
             this.updateLevelSelectionUI();
         }
 
-        // Si estamos en una pantalla que no es de juego, pausar el juego
+        
         if (screenId !== 'game-play-screen') {
             this.pauseGame();
             if (this.voiceSystem) {
                 this.voiceSystem.stopListening();
             }
         } else {
-            // Si volvemos a la pantalla de juego, reanudar
+           
             this.resumeGame();
-            // Asegúrate de que el sistema de voz no intente escuchar si el jugador ya está muerto
+           
             if (this.voiceSystem && this.player && !this.player.isDead) {
                 this.voiceSystem.startListening();
             }
@@ -210,19 +209,18 @@ export class Game {
         this.isGameOver = false;
         this.isPaused = false;
 
-        // Crea una nueva instancia del jugador para resetearlo completamente
+      
         this.player = new Player(this, this.assets.playerSprites);
-        this.level = new Level(this, this.currentLevelNumber); // Crea una nueva instancia del nivel
+        this.level = new Level(this, this.currentLevelNumber); 
         this.obstacles = [];
         this.enemies = [];
         this.projectiles = [];
         this.boss = null;
 
-        // Oculta explícitamente los modales de Game Over y Level Complete antes de iniciar el juego
+        
         document.getElementById('game-over').style.display = 'none';
         document.getElementById('level-complete').style.display = 'none';
 
-        // Establecer fondo del nivel
         const gamePlayScreen = document.getElementById('game-play-screen');
         if (gamePlayScreen) {
             gamePlayScreen.style.backgroundImage = `url(${this.level.config.background.src})`;
@@ -231,21 +229,21 @@ export class Game {
         }
 
 
-        this.updateHealthUI(); // Inicializar UI de salud
+        this.updateHealthUI();
         document.getElementById('level-indicator').textContent = `Nivel ${this.level.number}: ${this.level.name}`;
-        document.getElementById('objective').textContent = `Objetivo: ${this.level.config.objective}`; // Actualizar objetivo
+        document.getElementById('objective').textContent = `Objetivo: ${this.level.config.objective}`; 
 
         this.showScreen('game-play-screen');
 
-        // Asegúrate de que el game loop se inicie o reanude
+        
         if (this.animationFrameId) {
-            cancelAnimationFrame(this.animationFrameId); // Cancela cualquier bucle anterior
+            cancelAnimationFrame(this.animationFrameId); 
         }
         this.lastTime = performance.now();
         this.animationFrameId = requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
 
         if (this.voiceSystem) {
-            this.voiceSystem.startListening(); // Asegúrate de iniciar la escucha de voz al empezar el juego
+            this.voiceSystem.startListening(); 
         }
     }
 
@@ -259,11 +257,10 @@ export class Game {
 
         this.draw();
 
-        // El bucle de juego debe continuar solo si NO es Game Over
         if (!this.isGameOver) {
             this.animationFrameId = requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
         } else {
-            // Si es Game Over, el loop debe detenerse.
+
             cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         }
@@ -272,8 +269,7 @@ export class Game {
     update(deltaTime) {
         this.gameSpeed = this.level.config.gameSpeed;
         if (this.player.isDead) {
-            // Si el jugador está muerto, permite que se actualice una última vez (para mostrar la animación de muerte)
-            // pero luego detiene el resto de la lógica del juego.
+            
             this.player.update(deltaTime);
             return;
         }
@@ -298,53 +294,52 @@ export class Game {
 
         if (this.boss) {
             this.boss.update(deltaTime);
-            // Si el jefe muere y el juego no ha terminado (para evitar llamadas duplicadas)
+           
             if (this.boss.isDead && !this.isGameOver) {
                 console.log("¡Jefe está muerto! Llamando a levelComplete().");
                 this.levelComplete();
-                // No hay 'return' aquí porque levelComplete() establecerá isGameOver a true,
-                // lo que detendrá el bucle en la siguiente iteración.
+               return
             }
         }
 
-        this.checkCollisions(); // Llama a una función unificada para todas las colisiones
+        this.checkCollisions(); 
         this.updateUI();
     }
 
     checkCollisions() {
-        // Colisiones del jugador con obstáculos
+        
         for (let i = this.obstacles.length - 1; i >= 0; i--) {
             const obstacle = this.obstacles[i];
             if (checkCollision(this.player, obstacle)) {
                 this.player.takeDamage();
-                this.obstacles.splice(i, 1); // Eliminar obstáculo después de la colisión
-                playSound('assets/sounds/player_hit.wav'); // Sonido de impacto al jugador
+                this.obstacles.splice(i, 1); 
+                playSound('assets/sounds/player_hit.wav');
             }
         }
 
-        // Colisiones del jugador con enemigos
+      
         for (let i = this.enemies.length - 1; i >= 0; i--) {
             const enemy = this.enemies[i];
             if (checkCollision(this.player, enemy)) {
                 this.player.takeDamage();
-                this.enemies.splice(i, 1); // Eliminar enemigo después de la colisión
-                playSound('assets/sounds/player_hit.wav'); // Sonido de impacto al jugador
+                this.enemies.splice(i, 1);
+                playSound('assets/sounds/player_hit.wav');
             }
         }
 
-        // Proyectiles del jugador vs. enemigos
+       
         for (let i = this.projectiles.length - 1; i >= 0; i--) {
             const p = this.projectiles[i];
-            if (!p.isEnemy) { // Si el proyectil es del jugador
-                // Colisión con enemigos regulares
+            if (!p.isEnemy) { 
+               
                 for (let j = this.enemies.length - 1; j >= 0; j--) {
                     const enemy = this.enemies[j];
                     if (checkCollision(p, enemy)) {
-                        this.enemies.splice(j, 1); // Eliminar enemigo
-                        this.projectiles.splice(i, 1); // Eliminar proyectil
-                        this.score += 50; // Puntos por eliminar enemigo
-                        playSound('assets/sounds/hit.wav'); // Sonido de impacto
-                        return; // Salir para evitar errores de índice después de eliminar
+                        this.enemies.splice(j, 1); 
+                        this.projectiles.splice(i, 1); 
+                        this.score += 50; 
+                        playSound('assets/sounds/hit.wav');
+                        return; 
                     }
                 }
                 // Colisión con jefe
@@ -354,28 +349,26 @@ export class Game {
                     console.log("Daño del proyectil (p.damage):", p.damage);
                     this.boss.takeDamage(p.damage);
                     console.log("Vida actual del jefe DESPUÉS del daño:", this.boss.health);
-                    this.projectiles.splice(i, 1); // Eliminar proyectil
-                    this.score += 10; // Pequeños puntos por golpear al jefe
-                    playSound('assets/sounds/hit.wav'); // Sonido de impacto
-                    return; // Salir después de que un proyectil golpea al jefe
+                    this.projectiles.splice(i, 1); 
+                    this.score += 10; /
+                    playSound('assets/sounds/hit.wav'); 
+                    return; 
                 }
             } else { // Si el proyectil es del enemigo
                 if (this.player && !this.player.isDead && checkCollision(p, this.player)) {
                     this.player.takeDamage(p.damage);
-                    this.projectiles.splice(i, 1); // Eliminar proyectil
-                    playSound('assets/sounds/player_hit.wav'); // Sonido de impacto al jugador
-                    return; // Salir después de que un proyectil enemigo golpea al jugador
+                    this.projectiles.splice(i, 1);
+                    playSound('assets/sounds/player_hit.wav');
+                    return;
                 }
             }
         }
 
-        // Colisión del jugador con el jefe (si el jefe es un objeto físico)
-        // La lógica de daño al jugador si choca con el jefe debe estar aquí
+       
         if (this.boss && this.player && !this.player.isDead && checkCollision(this.player, this.boss)) {
-            // Podrías tener una colisión que haga daño continuo o empuje.
-            // Para simplificar, si choca con el jefe, pierde vida.
-            this.player.takeDamage(5); // Daño mayor por chocar directamente con el jefe
-            // Podrías añadir un efecto de "empuje" al jugador si choca con el jefe.
+           
+            this.player.takeDamage(5); 
+            
             playSound('assets/sounds/player_hit.wav');
         }
     }
@@ -387,20 +380,20 @@ export class Game {
         if (this.level && this.level.config.background) {
             this.ctx.drawImage(this.level.config.background, 0, 0, this.canvas.width, this.canvas.height - this.groundHeight);
         } else {
-            this.ctx.fillStyle = '#87CEEB'; // Fallback a cielo azul
+            this.ctx.fillStyle = '#87CEEB'; 
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height - this.groundHeight);
         }
 
         // Dibujar suelo
-        this.ctx.fillStyle = '#8B4513'; // Color de tierra
+        this.ctx.fillStyle = '#301a22';
         this.ctx.fillRect(0, this.canvas.height - this.groundHeight, this.canvas.width, this.groundHeight);
 
-        // Dibujar todas las entidades
+       
         this.obstacles.forEach(obstacle => obstacle.draw(this.ctx));
         this.enemies.forEach(enemy => enemy.draw(this.ctx));
         this.projectiles.forEach(projectile => projectile.draw(this.ctx));
 
-        // Dibujar jugador, incluso si está muerto para mostrar el sprite de muerte
+        
         if (this.player) {
             this.player.draw(this.ctx);
         }
