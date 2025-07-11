@@ -350,7 +350,7 @@ export class Game {
                     this.boss.takeDamage(p.damage);
                     console.log("Vida actual del jefe DESPUÉS del daño:", this.boss.health);
                     this.projectiles.splice(i, 1); 
-                    this.score += 10; /
+                    this.score += 10; //corrección
                     playSound('assets/sounds/hit.wav'); 
                     return; 
                 }
