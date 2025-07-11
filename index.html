@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chachapoyas Runner - Kuelap</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏃‍♂️</text></svg>">
+</head>
+<body>
+    <div id="game-container">
+        <div id="loading-screen" class="game-screen active">
+            <h1>Cargando Recursos...</h1>
+            <p>Por favor, espera...</p>
+        </div>
+
+        <div id="main-menu" class="game-screen">
+            <h1>Chachapoyas Runner</h1>
+            <div class="menu-options">
+                <button id="play-game-btn">Iniciar Juego</button>
+                <button id="levels-btn">Seleccionar Nivel</button>
+                <button id="instructions-btn">Instrucciones</button>
+                <button id="credits-btn">Créditos</button>
+            </div>
+            <div class="sound-toggle">
+                <input type="checkbox" id="sound-checkbox" checked>
+                <label for="sound-checkbox">Sonido</label>
+            </div>
+        </div>
+
+        <div id="level-selection-menu" class="game-screen">
+            <h2>Seleccionar Nivel</h2>
+            <div class="level-list">
+                <button class="level-select-btn" data-level="1">Nivel 1: Fortaleza de Kuélap</button>
+                <button class="level-select-btn" data-level="2" disabled>Nivel 2: Catarata de Gocta</button>
+                <button class="level-select-btn" data-level="3" disabled>Nivel 3: Sarcófagos de Karajía</button>
+            </div>
+            <button id="back-to-main-menu-from-levels" class="back-btn">Volver</button>
+        </div>
+
+        <div id="instructions-screen" class="game-screen">
+            <h2>Instrucciones del Juego</h2>
+            <p>Guía a tu personaje a través de los desafíos de la cultura Chachapoyas.</p>
+            <h3>Controles:</h3>
+            <div class="controls-grid">
+                <div class="control-item">
+                    <h4>Voz:</h4>
+                    <ul>
+                        <li><span class="voice-cmd">"Saltar" / "Brincar"</span>: El personaje salta.</li>
+                        <li><span class="voice-cmd">"Abajo" / "Agacharse"</span>: El personaje se agacha.</li>
+                        <li><span class="voice-cmd">"Fuego" / "Disparar"</span>: El personaje dispara.</li>
+                    </ul>
+                </div>
+                <div class="control-item">
+                    <h4>Teclado:</h4>
+                    <ul>
+                        <li><span class="key-cmd">↑</span> o <span class="key-cmd">Espacio</span>: Saltar</li>
+                        <li><span class="key-cmd">↓</span>: Agacharse</li>
+                        <li><span class="key-cmd">F</span>: Disparar</li>
+                    </ul>
+                </div>
+            </div>
+            <p>Esquiva obstáculos y enemigos. Recoge power-ups para ayudarte en tu aventura. Derrota al guardián de cada nivel para avanzar.</p>
+            <button id="back-to-main-menu-from-instructions" class="back-btn">Volver</button>
+        </div>
+
+        <div id="credits-screen" class="game-screen">
+            <h2>Créditos</h2>
+            <p><strong>Diseño y Desarrollo:</strong> [Tu Nombre/Equipo Aquí]</p>
+            <p><strong>Assets Gráficos:</strong> Creados por [Artista/Fuente]</p>
+            <p><strong>Efectos de Sonido:</strong> De [Fuente de Sonidos]</p>
+            <p><strong>Inspiración:</strong> Cultura Chachapoyas de Perú</p>
+            <button id="back-to-main-menu-from-credits" class="back-btn">Volver</button>
+        </div>
+
+        <div id="game-play-screen" class="game-screen">
+            <div id="game-ui">
+                <p>Puntaje: <span id="score-display">0</span></p>
+                <p>Vida: <span id="player-health"></span></p>
+                <p id="level-indicator">Nivel:</p>
+                <p id="objective">Objetivo:</p>
+                <p id="voice-feedback"></p>
+                <div id="boss-warning-display" class="warning-message"></div>
+            </div>
+            <canvas id="game-canvas"></canvas>
+        </div>
+
+        <div id="game-over" class="modal">
+            <h2>¡GAME OVER!</h2>
+            <p>Tu aventura terminó en las profundidades de la selva...</p>
+            <p>Puntaje Final: <span id="final-score">0</span></p>
+            <button id="restart-btn" class="main-btn">Menú Principal</button>
+            <button id="back-to-menu-from-gameover" class="ui-button">Menú Principal</button>
+        </div>
+
+        <div id="level-complete" class="game-screen">
+            <h2>¡Nivel Completado!</h2>
+            <p>Has derrotado al Guardián de <span id="completed-level-name"></span></p>
+            <p id="final-message-level-complete"></p> 
+            <p>Puntaje final: <span id="final-score-level-complete">0</span></p>
+            <button id="next-level-btn" class="ui-button">Siguiente Nivel</button>
+            <button id="back-to-menu-from-level-complete" class="ui-button">Volver al Menú Principal</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
