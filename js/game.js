@@ -298,7 +298,6 @@ export class Game {
             if (this.boss.isDead && !this.isGameOver) {
                 console.log("¡Jefe está muerto! Llamando a levelComplete().");
                 this.levelComplete();
-               return
             }
         }
 
